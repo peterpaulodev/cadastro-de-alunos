@@ -1,2 +1,3 @@
-+--- Lista de alunos ---+
-teste - 123231 - 21331
+RA: eqw | Nome: Petrewron | Data de nascimento: 12/12/2000 | Idade: 21
+RA: 1233 | Nome: Alice | Data de nascimento: 12/12/2014 | Idade: 7
+RA: 1891178 | Nome: Paulo | Data de nascimento: 12/12/2004 | Idade: 17

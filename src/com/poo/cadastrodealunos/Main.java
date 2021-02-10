@@ -1,22 +1,47 @@
 package com.poo.cadastrodealunos;
 
+import jdk.jfr.Period;
+
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Main {
     private static String curDir = System.getProperty("user.dir") + "/tmp/cadastro.txt";
 
-    static void cadastrar() throws IOException {
+    static void cadastrar() throws IOException, ParseException {
         Scanner ler = new Scanner(System.in);
-        String nome = "", ra = "", dtNasc = "";
+        String nome = "", ra = "", dtNasc = "", idade = "";
+        SimpleDateFormat formato = new SimpleDateFormat("dd/mm/yyyy");
 
-//        FileReader arqLido = new FileReader(curDir);
-//        BufferedReader lerArq = new BufferedReader(arqLido);
-//        String lista =  lerArq.lines().collect(Collectors.joining());
-//
-//        System.out.printf("%s\n", lista);
+        ArrayList<String> oldArq = new ArrayList();
+
+        try {
+            FileReader arqLido = new FileReader(curDir);
+            BufferedReader lerArq = new BufferedReader(arqLido);
+
+            String linha = lerArq.readLine();
+
+            while (linha != null) {
+                oldArq.add(linha);
+                linha = lerArq.readLine();
+            }
+
+        } catch (IOException e) {
+            System.err.printf("Erro na abertura do arquivo: %s.\n", e.getMessage());
+        }
+
+        FileWriter arq = new FileWriter(curDir);
+        PrintWriter gravarArq = new PrintWriter(arq);
+
+        for (int i=0; i< oldArq.size(); i++) {
+            if(oldArq.get(i) != null) {
+                gravarArq.printf("%s\n", oldArq.get(i));
+            }
+        }
 
         System.out.printf("Digite o nome: ");
         nome = ler.nextLine();
@@ -27,13 +52,19 @@ public class Main {
         System.out.printf("Digite a data de nascimento: ");
         dtNasc = ler.nextLine();
 
-        FileWriter arq = new FileWriter(curDir);
-        PrintWriter gravarArq = new PrintWriter(arq);
+        Date dt = new Date();
+        Date dataDe = formato.parse(dtNasc);
+        Date dataAte = formato.parse(formato.format(dt));
 
-        gravarArq.printf("+--- Lista de alunos ---+\n");
-        gravarArq.printf(nome + " - ");
-        gravarArq.printf(ra + " - ");
-        gravarArq.printf(dtNasc);
+        long anos = ((dataAte.getTime() - dataDe.getTime()) / (1000*60*60*24) / 30) / 12;
+        idade = Long.toString(anos);
+
+        gravarArq.printf("RA: " + ra + " | ");
+        gravarArq.printf("Nome: " + nome + " | ");
+        gravarArq.printf("Data de nascimento: " + dtNasc + " | ");
+        gravarArq.printf("Idade: " + idade);
+
+        oldArq.add(ra + " - " + nome + " - " + dtNasc);
 
         arq.close();
     }
@@ -62,18 +93,45 @@ public class Main {
     }
 
     static void editar() {
-        // code to be executed
+        //Instantiating the File class
+        String filePath = "D://input.txt";
+        //Instantiating the Scanner class to read the file
+        Scanner sc = new Scanner(new File(filePath));
+        //instantiating the StringBuffer class
+        StringBuffer buffer = new StringBuffer();
+
+        //Reading lines of the file and appending them to StringBuffer
+        while (sc.hasNextLine()) {
+            buffer.append(sc.nextLine()+System.lineSeparator());
+        }
+
+        String fileContents = buffer.toString();
+        System.out.println("Contents of the file: "+fileContents);
+
+        //closing the Scanner object
+        sc.close();
+
+        String oldLine = "No preconditions and no impediments. Simply Easy Learning!";
+        String newLine = "Enjoy the free content";
+        //Replacing the old line with new line
+        fileContents = fileContents.replaceAll(oldLine, newLine);
+        //instantiating the FileWriter class
+        FileWriter writer = new FileWriter(filePath);
+        System.out.println("");
+        System.out.println("new data: "+fileContents);
+        writer.append(fileContents);
+        writer.flush();
     }
     static void excluir() {
         // code to be executed
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         Scanner ler = new Scanner(System.in);
         int opcao = 0;
 
-        while(opcao != 4) {
-            System.out.printf("+--- Cadastro de alunos ---+\n");
+        while(opcao != 5) {
+            System.out.printf("\n\n+--- Cadastro de alunos ---+\n");
             System.out.printf("(1) Cadastrar aluno \n");
             System.out.printf("(2) Editar aluno \n");
             System.out.printf("(3) Visualizar lista de alunos \n");
@@ -86,12 +144,16 @@ public class Main {
             switch (opcao){
                 case 1:
                     cadastrar();
+                    break;
                 case 2:
                     editar();
+                    break;
                 case 3:
                     ler();
+                    break;
                 case 4:
                     excluir();
+                    break;
                 default:
                     opcao = 5;
             }
